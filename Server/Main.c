@@ -17,8 +17,9 @@
 #define NCLIENTS 100
 
 typedef struct Client {
-	char *client_id;
-	pthread_t thread_id;
+	char *name;
+	pthread_t thread;
+
 } client;
 
 void error(char *msg)
@@ -32,17 +33,19 @@ void dostuff (int *sock)
 	int n;
 	char buffer[256];
 
-	bzero(buffer, 256);
-	n = recv(*sock, buffer, 255, NULL);
+	while(1) {
+		bzero(buffer, 256);
+		n = recv(*sock, buffer, 255, NULL);
 
-	if (n < 0)
-		error("ERROR: Cannot read socket");
+		if (n < 0)
+			error("ERROR: Cannot read socket");
 
-	printf("Message: %s\n", buffer);
-	n = send(*sock, "Message received", 18, NULL);
+		printf("Message: %s\n", buffer);
+		n = send(*sock, "Message received", 18, NULL);
 
-	if (n < 0)
-		error("ERROR: Cannot write to socket");
+		if (n < 0)
+			error("ERROR: Cannot write to socket");
+	}
 }
 
 int main(int argc, char *argv[])
@@ -84,7 +87,7 @@ int main(int argc, char *argv[])
 		if (newsockfd < 0)
 			error("ERROR: Cannot accept socket");
 
-		pthread_create(&clients[client_num++]->thread_id, &attr, &dostuff, (void *) &newsockfd);
+		pthread_create(&clients[client_num++].thread, &attr, &dostuff, (void *) &newsockfd);
 	}
 
 	return 0;

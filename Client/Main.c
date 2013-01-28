@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 	while(1) {
 		bzero(buffer, 256);
 		fgets(buffer, 255, stdin);
-		n = write(sockfd, buffer, strlen(buffer));
+		n = send(sockfd, buffer, strlen(buffer), NULL);
 
 		if (n < 0)
 			error("ERROR: Cannot write to socket");
 
 		bzero(buffer, 256);
-		n = read(sockfd, buffer, 255);
+		n = recv(sockfd, buffer, 255, NULL);
 
 		if (n < 0)
 			error("ERROR: Cannot read from socket");
